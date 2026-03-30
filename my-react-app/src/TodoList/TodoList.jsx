@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { v1 } from "uuid";
 
 function TodoList({ title, tasks }) {
   const [newTasks, setTasks] = useState(tasks);
-  const [newTitle, setTitle] = useState("");
+  const [titleNewTasks, setTitle] = useState("");
+  const [filter, setFilter] = useState("all");
 
   const removeTask = (id) => {
     let resultTask = newTasks.filter((t) => t.id !== id);
@@ -10,19 +12,23 @@ function TodoList({ title, tasks }) {
   };
 
   const addTask = (title) => {
-    const newTask = {
-      id: title + Math.random(),
+    const task = {
+      id: v1(),
       title: title,
       isDone: false,
     };
 
-    setTasks([newTask, ...newTasks]);
+    setTasks([task, ...newTasks]);
     setTitle("");
   };
 
-  const handleInputChange = (event) => {
-    setTitle(event.target.value); // обновляем состояние при каждом вводе текста
-  };
+  let filteredTasks = newTasks;
+  if (filter === "completed") {
+    filteredTasks = newTasks.filter((t) => t.isDone === true);
+  }
+  if (filter === "active") {
+    filteredTasks = newTasks.filter((t) => t.isDone === false);
+  }
 
   return (
     <div>
@@ -30,14 +36,20 @@ function TodoList({ title, tasks }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          addTask(newTitle);
+          addTask(titleNewTasks);
         }}
       >
-        <input type="text" value={newTitle} onChange={handleInputChange} />
+        <input
+          type="text"
+          value={titleNewTasks}
+          onChange={(event) => {
+            setTitle(event.target.value);
+          }}
+        />
         <button type="submit">+</button>
       </form>
       <ul>
-        {newTasks.map((task) => {
+        {filteredTasks.map((task) => {
           return (
             <li key={task.id}>
               <input type="checkbox" checked={task.isDone} />
@@ -48,9 +60,27 @@ function TodoList({ title, tasks }) {
         })}
       </ul>
       <div>
-        <button>All</button>
-        <button>ActiveAll</button>
-        <button>Completed</button>
+        <button
+          onClick={() => {
+            setFilter("all");
+          }}
+        >
+          All
+        </button>
+        <button
+          onClick={() => {
+            setFilter("active");
+          }}
+        >
+          Active
+        </button>
+        <button
+          onClick={() => {
+            setFilter("completed");
+          }}
+        >
+          Completed
+        </button>
       </div>
     </div>
   );
