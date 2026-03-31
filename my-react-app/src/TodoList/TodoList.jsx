@@ -46,7 +46,9 @@ function TodoList({ title, tasks }) {
             setTitle(event.target.value);
           }}
         />
-        <button type="submit">+</button>
+        <button disabled={titleNewTasks === "" ? true : false} type="submit">
+          +
+        </button>
       </form>
       <ul>
         {filteredTasks.map((task) => {
